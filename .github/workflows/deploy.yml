@@ -2,7 +2,8 @@ name: Deploy to GitHub Pages
 
 on:
   push:
-    branches: [ main ]
+    branches: [main]
+  workflow_dispatch:  # Allows manual trigger from GitHub UI
 
 permissions:
   contents: read
@@ -13,22 +14,21 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
+      - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Setup Node
+      - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 20
-          cache: npm
+          node-version: '20'  # Use a recent LTS version; adjust as needed
 
       - name: Install dependencies
-        run: npm install
+        run: npm ci  # Or 'npm install' if you don't have a package-lock.json
 
-      - name: Build
-        run: npm run build
+      - name: Build project
+        run: npm run build  # Assumes your package.json has "build": "vite build"
 
-      - name: Copy index to 404 for SPA routing fallback
+      - name: Fix routing for SPA (copy index.html to 404.html)
         run: cp dist/index.html dist/404.html
 
       - name: Upload artifact
